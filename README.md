@@ -79,9 +79,9 @@
     3 - **Event Publisher**: Publica os eventos de confirmação ou falha de processamento para os outros serviços (Payment Service e Inventory Service)
 
 
-![Component Diagram](https://raw.githubusercontent.com/jnerydesigner/challenge-bemol/main/assets/diagrams/out/n3-component/Component%20n3.png)
+![Container Diagram](https://raw.githubusercontent.com/jnerydesigner/challenge-bemol/main/assets/diagrams/out/n4-code-order/Code%20n4.png)
 
-4. **Code Diagram**
+4. **Code Order Diagram**
 
 * OrderController (controlador HTTP)
 
@@ -90,3 +90,7 @@
 * OrderRepository (para persistência de dados)
 
 * OrderProcessor (lógica de negócios)
+
+
+![Code Order Diagram](https://raw.githubusercontent.com/jnerydesigner/challenge-bemol/main/assets/diagrams/out/n4-code-order/Code%20n4.png)
+
