@@ -1,0 +1,20 @@
+@startuml Code n4
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Component.puml
+
+Container_Boundary(orderService, "Order Service") {
+
+    Component(orderController, "OrderController", "Controller", "Recebe requisições HTTP relacionadas a pedidos")
+    Component(orderEventHandler, "OrderEventHandler", "Event Handler", "Consome eventos de pedidos do Message Broker")
+    Component(orderRepository, "OrderRepository", "Repository", "Realiza operações de persistência de pedidos")
+    Component(orderProcessor, "OrderProcessor", "Business Logic", "Contém a lógica de processamento de pedidos")
+    Component(orderEventPublisher, "OrderEventPublisher", "Event Publisher", "Publica eventos no Message Broker")
+}
+
+' Relações internas
+Rel(orderController, orderProcessor, "Chama para processar pedidos")
+Rel(orderController, orderRepository, "Consulta e persiste dados dos pedidos")
+Rel(orderProcessor, orderRepository, "Atualiza estado dos pedidos")
+Rel(orderProcessor, orderEventPublisher, "Publica eventos de novos pedidos")
+Rel(orderEventHandler, orderProcessor, "Processa eventos de pedidos consumidos do Message Broker")
+
+@enduml

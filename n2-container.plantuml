@@ -1,0 +1,36 @@
+@startuml Container n2
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
+
+Person(cliente, "Cliente", "Usuário do sistema que faz pedidos")
+
+System_Boundary(spp_boundary, "Sistema de Processamento de Pedidos") {
+
+  Container(apiGateway, "API Gateway", "NestJS + Express", "Recebe requisições dos clientes e publica eventos no Message Broker")
+  
+  Container(orderService, "Order Service", "Microsserviço", "Processa pedidos e eventos, escalável dinamicamente")
+  
+  Container(paymentService, "Payment Service", "Microsserviço", "Gerencia a aprovação e rejeição de pagamentos")
+  
+  Container(inventoryService, "Inventory Service", "Microsserviço", "Reserva e libera estoque em tempo real")
+  
+  Container(messageBroker, "Message Broker", "RabbitMQ / Kafka", "Centraliza a troca de mensagens entre serviços")
+  
+  ContainerDb(database, "Database", "MongoDB / PostgreSQL", "Armazena o estado dos pedidos, inventário e transações")
+  
+  Container(kubernetes, "Auto-Scaling Service", "Kubernetes / Docker Swarm", "Escalabilidade dinâmica dos contêineres")
+  
+}
+
+Rel(cliente, apiGateway, "Faz requisições")
+Rel(apiGateway, orderService, "Gera eventos de criação, atualização e consulta de pedidos")
+Rel(orderService, messageBroker, "Publica eventos de pedidos")
+Rel(messageBroker, paymentService, "Envia eventos de pedidos para pagamento")
+Rel(messageBroker, inventoryService, "Envia eventos para atualização de estoque")
+Rel(orderService, database, "Armazena estado de pedidos")
+Rel(paymentService, database, "Armazena transações de pagamento")
+Rel(inventoryService, database, "Atualiza estoque")
+Rel(kubernetes, orderService, "Escala o serviço dinamicamente com base na demanda")
+Rel(kubernetes, paymentService, "Escala o serviço dinamicamente com base na demanda")
+Rel(kubernetes, inventoryService, "Escala o serviço dinamicamente com base na demanda")
+
+@enduml

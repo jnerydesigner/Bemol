@@ -1,0 +1,55 @@
+@startuml Component n3
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Component.puml
+
+System_Boundary(spp_boundary, "Sistema de Processamento de Pedidos") {
+
+  Container(apiGateway, "API Gateway", "NestJS + Express", "Recebe requisições dos clientes e gera eventos")
+
+  Container_Boundary(orderService, "Order Service") {
+    Component(orderController, "Order Controller", "Controller", "Recebe requisições e coordena a criação de pedidos")
+    Component(orderServiceComponent, "Order Service", "Service", "Lógica de negócio para processamento de pedidos")
+    Component(orderRepository, "Order Repository", "Repository", "Consulta e atualiza o estado dos pedidos no banco de dados")
+    Component(eventPublisher, "Event Publisher", "Publisher", "Publica eventos de criação e atualização de pedidos no Message Broker")
+  }
+
+  Container_Boundary(paymentService, "Payment Service") {
+    Component(paymentController, "Payment Controller", "Controller", "Recebe requisições de pagamento")
+    Component(paymentProcessor, "Payment Processor", "Service", "Processa pagamentos com gateways externos")
+    Component(paymentRepository, "Payment Repository", "Repository", "Armazena o estado de pagamentos")
+    Component(paymentEventPublisher, "Payment Event Publisher", "Publisher", "Publica eventos de pagamento no Message Broker")
+  }
+
+  Container_Boundary(inventoryService, "Inventory Service") {
+    Component(inventoryController, "Inventory Controller", "Controller", "Gerencia requisições relacionadas ao estoque")
+    Component(inventoryServiceComponent, "Inventory Service", "Service", "Reserva e libera o estoque")
+    Component(inventoryRepository, "Inventory Repository", "Repository", "Armazena o estado do inventário")
+    Component(inventoryEventPublisher, "Inventory Event Publisher", "Publisher", "Publica eventos de atualização de estoque no Message Broker")
+  }
+
+  Container(messageBroker, "Message Broker", "RabbitMQ / Kafka", "Centraliza a troca de mensagens entre os serviços")
+
+  ContainerDb(database, "Database", "MongoDB / PostgreSQL", "Armazena o estado dos pedidos, pagamentos e inventário")
+}
+
+Rel(cliente, apiGateway, "Faz requisições")
+Rel(apiGateway, orderController, "Requisições de pedidos")
+Rel(orderController, orderServiceComponent, "Coordena a lógica de negócio")
+Rel(orderServiceComponent, orderRepository, "Acessa o banco de dados")
+Rel(orderServiceComponent, eventPublisher, "Publica eventos no Message Broker")
+
+Rel(paymentController, paymentProcessor, "Processa pagamento")
+Rel(paymentProcessor, paymentRepository, "Acessa o banco de dados")
+Rel(paymentProcessor, paymentEventPublisher, "Publica eventos de pagamento no Message Broker")
+
+Rel(inventoryController, inventoryServiceComponent, "Reserva e libera estoque")
+Rel(inventoryServiceComponent, inventoryRepository, "Acessa o banco de dados")
+Rel(inventoryServiceComponent, inventoryEventPublisher, "Publica eventos de estoque no Message Broker")
+
+Rel(eventPublisher, messageBroker, "Publica eventos")
+Rel(paymentEventPublisher, messageBroker, "Publica eventos")
+Rel(inventoryEventPublisher, messageBroker, "Publica eventos")
+Rel(orderRepository, database, "Consulta e atualiza dados")
+Rel(paymentRepository, database, "Consulta e atualiza dados")
+Rel(inventoryRepository, database, "Consulta e atualiza dados")
+
+@enduml

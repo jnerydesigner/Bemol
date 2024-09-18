@@ -1,0 +1,24 @@
+@startuml Context
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
+
+Person(cliente, "Cliente", "Usuário do sistema que faz pedidos")
+
+System(legacySystem, "Sistema Legado", "Sistemas externos de legado")
+
+System_Boundary(spp_boundary, "Sistema de Processamento de Pedidos") {
+  Container(apiGateway, "API Gateway", "NestJS", "Recebe requisições dos clientes e gera eventos")
+  Container(orderService, "Order Service", "Microsserviço", "Processa pedidos e publica eventos")
+  Container(messageBroker, "Gerenciador de Mensagens", "RabbitMQ/Kafka", "Gerencia a comunicação entre microsserviços")
+  Container(paymentService, "Payment Service", "Microsserviço", "Gerencia pagamentos")
+  Container(inventoryService, "Inventory Service", "Microsserviço", "Gerencia o estoque")
+}
+
+cliente --> apiGateway : "Faz pedidos e consultas"
+apiGateway --> orderService : "Cria novos pedidos"
+orderService --> messageBroker : "Publica eventos de pedidos"
+messageBroker --> paymentService : "Processa pagamentos"
+messageBroker --> inventoryService : "Atualiza estoque"
+orderService --> legacySystem : "Comunicação com sistemas legados"
+
+
+@enduml
