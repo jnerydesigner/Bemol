@@ -1,6 +1,8 @@
 @startuml Component n3
 !include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Component.puml
 
+Person(cliente, "Cliente", "Usuário do sistema que faz pedidos")
+
 System_Boundary(spp_boundary, "Sistema de Processamento de Pedidos") {
 
   Container(apiGateway, "API Gateway", "NestJS + Express", "Recebe requisições dos clientes e gera eventos")
