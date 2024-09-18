@@ -7,7 +7,7 @@ Person(cliente, "Cliente", "Usuário do sistema que faz pedidos")
 
 System_Boundary(spp_boundary, "Sistema de Processamento de Pedidos") {
 
-  Container(apiGateway, "API Gateway BFF", "NestJS", "Recebe requisições dos clientes e gera eventos")
+  Container(apiGateway, "API Gateway BFF", "NestJS", "Recebe requisições dos clientes e envia para Order Controler")
 
 ' Order Micro Service
   Container_Boundary(orderService, "Order Micro Service") {

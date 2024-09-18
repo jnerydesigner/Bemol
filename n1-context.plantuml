@@ -6,9 +6,9 @@ Person(cliente, "Cliente", "Usuário do sistema que faz pedidos")
 System(legacySystem, "Sistema Legado", "Sistemas externos de legado")
 
 System_Boundary(spp_boundary, "Sistema de Processamento de Pedidos") {
-  Container(apiGateway, "API Gateway", "NestJS", "Recebe requisições dos clientes e gera eventos")
+  Container(apiGateway, "API Gateway BFF", "NestJS", "Recebe requisições dos clientes e gera eventos")
   Container(orderService, "Order Service", "Microsserviço", "Processa pedidos e publica eventos")
-  Container(messageBroker, "Gerenciador de Mensagens", "RabbitMQ/Kafka", "Gerencia a comunicação entre microsserviços")
+  Container(messageBroker, "Gerenciador de Mensagens", "RabbitMQ", "Gerencia a comunicação entre microsserviços")
   Container(paymentService, "Payment Service", "Microsserviço", "Gerencia pagamentos")
   Container(inventoryService, "Inventory Service", "Microsserviço", "Gerencia o estoque")
 }
