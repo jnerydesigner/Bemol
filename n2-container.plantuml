@@ -13,9 +13,9 @@ System_Boundary(spp_boundary, "Sistema de Processamento de Pedidos") {
   
   Container(inventoryService, "Inventory Service", "Microsserviço", "Reserva e libera estoque em tempo real")
   
-  Container(messageBroker, "Message Broker", "RabbitMQ / Kafka", "Centraliza a troca de mensagens entre serviços")
+  Container(messageBroker, "Message Broker", "RabbitMQ", "Centraliza a troca de mensagens entre serviços")
   
-  ContainerDb(database, "Database", "MongoDB / PostgreSQL", "Armazena o estado dos pedidos, inventário e transações")
+  ContainerDb(database, "Database", "PostgreSQL", "Armazena o estado dos pedidos, inventário e transações")
   
   Container(kubernetes, "Auto-Scaling Service", "Kubernetes / Docker Swarm", "Escalabilidade dinâmica dos contêineres")
   
