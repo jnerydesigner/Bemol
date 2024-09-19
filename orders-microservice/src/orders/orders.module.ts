@@ -10,9 +10,10 @@ const config = new ConfigService();
     ClientsModule.register([
       {
         name: 'INVENTORY_MICROSERVICE',
-        transport: Transport.TCP,
+        transport: Transport.RMQ,
         options: {
-          port: 4504,
+          urls: ['amqp://localhost:5672'],
+          queue: 'inventory_queue',
         },
       },
     ]),
