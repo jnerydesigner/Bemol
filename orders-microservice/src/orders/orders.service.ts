@@ -8,11 +8,11 @@ export class OrdersService {
   private readonly orders = [];
   constructor(
     @Inject('INVENTORY_MICROSERVICE')
-    private readonly inventoryClient: ClientProxy,
+    private readonly rabbitClient: ClientProxy,
   ) {}
   createOrder(orderCreate: OrderRequestCreateDTO) {
     this.orders.push(orderCreate);
-    this.inventoryClient.emit(
+    this.rabbitClient.emit(
       'create_order',
       new CreateOrderEvent(
         orderCreate.userId,
@@ -20,6 +20,7 @@ export class OrdersService {
         orderCreate.productId,
       ),
     );
+
     return orderCreate;
   }
 }

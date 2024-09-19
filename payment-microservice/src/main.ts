@@ -13,9 +13,10 @@ async function bootstrap() {
   const logger = new Logger('PaymentMicroservice');
 
   app.connectMicroservice<MicroserviceOptions>({
-    transport: Transport.TCP,
+    transport: Transport.RMQ,
     options: {
-      port: PORT_PAYMENT_MICROSERVICE,
+      urls: ['amqp://localhost:5672'],
+      queue: 'payment_queue',
     },
   });
 

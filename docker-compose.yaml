@@ -1,23 +1,20 @@
 services:
-  rabbitmq:
+  bemol_rabbitmq:
     image: rabbitmq:3-management-alpine
-    container_name: bemol_rabbitmq
+    container_name: "bemol_rabbitmq"
     ports:
-      - 5673:5672
-      - 15673:15672
-    environment:
-      RABBITMQ_DEFAULT_USER: bemol
-      RABBITMQ_DEFAULT_PASS: bemol@2024
+      - 5672:5672
+      - 15672:15672
     volumes:
       - rabbitmq_data:/var/lib/rabbitmq/
       - rabbitmq_log:/var/log/rabbitmq
     networks:
-      - bemol_challenge_net
+      - bemol_rabbitmq
+    restart: unless-stopped
 
 networks:
-  bemol_challenge_net:
+  bemol_rabbitmq:
     driver: bridge
-
 volumes:
   rabbitmq_data:
     driver: local
