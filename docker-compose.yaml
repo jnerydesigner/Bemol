@@ -5,6 +5,9 @@ services:
     ports:
       - 5673:5672
       - 15673:15672
+    environment:
+      RABBITMQ_DEFAULT_USER: bemol
+      RABBITMQ_DEFAULT_PASS: bemol@2024
     volumes:
       - rabbitmq_data:/var/lib/rabbitmq/
       - rabbitmq_log:/var/log/rabbitmq
