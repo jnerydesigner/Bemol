@@ -1,0 +1,22 @@
+services:
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    container_name: bemol_rabbitmq
+    ports:
+      - 5673:5672
+      - 15673:15672
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq/
+      - rabbitmq_log:/var/log/rabbitmq
+    networks:
+      - bemol_challenge_net
+
+networks:
+  bemol_challenge_net:
+    driver: bridge
+
+volumes:
+  rabbitmq_data:
+    driver: local
+  rabbitmq_log:
+    driver: local
