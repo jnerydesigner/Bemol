@@ -12,8 +12,8 @@ services:
       - bemol_network
     restart: unless-stopped
 
-  bemol_postgres:
-    container_name: bemol_postgres
+  bemol_postgres_products:
+    container_name: bemol_postgres_products
     image: postgres
     environment:
       POSTGRES_USER: ${POSTGRES_USER:-root}
@@ -21,9 +21,57 @@ services:
       POSTGRES_DB: ${POSTGRES_DB:-bemol}
       PGDATA: /data/postgres
     volumes:
-      - bemol_postgres_vol:/data/postgres
+      - bemol_postgres_products_vol:/data/postgres
     ports:
       - "5454:5432"
+    networks:
+      - bemol_network
+    restart: unless-stopped
+
+  bemol_postgres_inventory:
+    container_name: bemol_postgres_inventory
+    image: postgres
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-root}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-12345678}
+      POSTGRES_DB: ${POSTGRES_DB:-bemol}
+      PGDATA: /data/postgres
+    volumes:
+      - bemol_postgres_inventory_vol:/data/postgres
+    ports:
+      - "5457:5432"
+    networks:
+      - bemol_network
+    restart: unless-stopped
+
+  bemol_postgres_orders:
+    container_name: bemol_postgres_orders
+    image: postgres
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-root}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-12345678}
+      POSTGRES_DB: ${POSTGRES_DB:-bemol}
+      PGDATA: /data/postgres
+    volumes:
+      - bemol_postgres_orders_vol:/data/postgres
+    ports:
+      - "5456:5432"
+    networks:
+      - bemol_network
+    restart: unless-stopped
+
+  bemol_postgres_payments:
+    container_name: bemol_postgres_payments
+    image: postgres
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-root}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-12345678}
+      POSTGRES_DB: ${POSTGRES_DB:-bemol}
+      PGDATA: /data/postgres
+    volumes:
+      - bemol_postgres_payments_vol:/data/postgres
+    ports:
+      - "5455:5432"
     networks:
       - bemol_network
     restart: unless-stopped
@@ -47,8 +95,8 @@ services:
     container_name: bemol_minio
     image: docker.io/bitnami/minio:2022
     ports:
-      - "9002:9000"
-      - "9003:9001"
+      - "9000:9000"
+      - "9001:9001"
     networks:
       - bemol_network
     volumes:
@@ -68,3 +116,7 @@ volumes:
   bemol_postgres_vol:
   bemol_pgadmin_vol:
   bemol_minio_data:
+  bemol_postgres_orders_vol:
+  bemol_postgres_payments_vol:
+  bemol_postgres_products_vol:
+  bemol_postgres_inventory_vol:
