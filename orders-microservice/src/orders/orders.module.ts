@@ -16,6 +16,14 @@ const config = new ConfigService();
           queue: 'inventory_queue',
         },
       },
+      {
+        name: 'PRODUCTS_MICROSERVICE',
+        transport: Transport.RMQ,
+        options: {
+          urls: ['amqp://localhost:5672'],
+          queue: 'products_queue',
+        },
+      },
     ]),
   ],
   providers: [OrdersService],

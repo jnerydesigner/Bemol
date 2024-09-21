@@ -24,30 +24,33 @@ export class OrdersPrismaRepository implements OrdersRepository {
     return orders;
   }
   async save(order: OrdersEntity): Promise<OrdersEntity> {
-    await this.prismaService.orders.create({
-      data: {
-        orderId: order.orderId,
-        quantity: order.quantity,
-        status: order.status,
-        total: order.total,
-        user: {
-          connect: {
-            userId: order.userId,
+    console.log(order.orderId);
+    const [orderCreated, productCreated] =
+      await this.prismaService.$transaction([
+        this.prismaService.orders.create({
+          data: {
+            orderId: order.orderId,
+            quantity: order.quantity,
+            status: order.status,
+            total: order.total,
+            user: {
+              connect: {
+                userId: order.userId,
+              },
+            },
           },
-        },
-      },
-    });
-
-    await this.prismaService.productsCart.createMany({
-      data: order.products.map((product) => {
-        return {
-          name: product.name,
-          price: product.price,
-          quantity: product.quantity,
-          orderId: order.orderId,
-        };
-      }),
-    });
+        }),
+        this.prismaService.productsCart.createMany({
+          data: order.products.map((product) => {
+            return {
+              name: product.name,
+              price: product.price,
+              quantity: product.quantity,
+              orderId: order.orderId,
+            };
+          }),
+        }),
+      ]);
 
     const productsResponse = await this.prismaService.orders.findFirst({
       where: {

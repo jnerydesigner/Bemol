@@ -12,17 +12,22 @@ export class OrdersEntity {
     readonly products: ProductsCartEntity[],
   ) {}
 
-  static create(userId: string, productsData: any[]): OrdersEntity {
-    const orderId = randomUUID();
+  static create(
+    userId: string,
+    productsData: any[],
+    orderIdInput?: string,
+  ): OrdersEntity {
+    const orderId = orderIdInput === undefined ? randomUUID() : orderIdInput;
     const status = OrderStatusEnum.PENDING;
     let quantityProductsInOrder: number = 0;
     let total = 0;
     const products = productsData.map((productData) => {
-      const product = ProductsCartEntity.createProduct(
+      const product = new ProductsCartEntity(
+        productData.productId,
         productData.name,
         productData.price,
-        orderId,
         productData.quantity,
+        orderId,
       );
       total += product.price * product.quantity;
       quantityProductsInOrder += product.quantity;

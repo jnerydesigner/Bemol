@@ -14,14 +14,28 @@ export class OrdersService {
     private readonly rabbitClient: ClientProxy,
     @Inject('ORDERS_REPOSITORY')
     private readonly ordersRepository: OrdersRepository,
+    @Inject('PRODUCTS_MICROSERVICE')
+    private readonly productsBroker: ClientProxy,
   ) {}
 
-  async createOrder(order: OrderRequestCreateDTO) {
-    const orderCreate = OrdersEntity.create(order.userId, order.products);
+  async emitOrder(order: OrderRequestCreateDTO) {
+    const orderCreate = OrdersEntity.create(
+      order.userId,
+      order.products,
+      order.orderId,
+    );
 
-    await this.ordersRepository.save(orderCreate);
+    this.productsBroker.emit('product_find_orders', orderCreate);
 
-    return orderCreate;
+    // const orderCreate = OrdersEntity.create(order.userId, order.products);
+    // await this.ordersRepository.save(orderCreate);
+    // return orderCreate;
+  }
+
+  async calculateOrder(data: OrderRequestCreateDTO) {
+    const order = OrdersEntity.create(data.userId, data.products, data.orderId);
+
+    await this.ordersRepository.save(order);
   }
 
   async findAllOrders() {
