@@ -12,7 +12,7 @@ async function bootstrap() {
   const PORT_SERVER_MICROSERVICE = config.get<number>(
     'INVENTORY_PORT_MICROSERVICE',
   );
-  const logger = new Logger('Main Orders Microservice');
+  const logger = new Logger('Main Inventory Microservice');
 
   app.connectMicroservice<MicroserviceOptions>({
     transport: Transport.RMQ,
