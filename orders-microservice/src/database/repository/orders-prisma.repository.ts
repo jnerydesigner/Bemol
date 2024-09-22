@@ -1,9 +1,13 @@
 import { PrismaService } from '@app/database/client/prisma.service';
+import { OrderInventoryConfirmedDTO } from '@app/orders/dto/order-inventory-confirmed.dto';
 import { OrdersEntity } from '@app/orders/entities/orders.entity';
+import { OrderStatusEnum } from '@app/orders/enum/order_status.enum';
 import { OrdersRepository } from '@app/orders/repository/orders.repository';
 
 export class OrdersPrismaRepository implements OrdersRepository {
-  constructor(private readonly prismaService: PrismaService) {}
+  constructor(private readonly prismaService: PrismaService) { }
+
+
   async findAll(): Promise<OrdersEntity[]> {
     const orderResponse = await this.prismaService.orders.findMany({
       include: {
@@ -24,7 +28,6 @@ export class OrdersPrismaRepository implements OrdersRepository {
     return orders;
   }
   async save(order: OrdersEntity): Promise<OrdersEntity> {
-    console.log(order.orderId);
     const [orderCreated, productCreated] =
       await this.prismaService.$transaction([
         this.prismaService.orders.create({
@@ -43,6 +46,7 @@ export class OrdersPrismaRepository implements OrdersRepository {
         this.prismaService.productsCart.createMany({
           data: order.products.map((product) => {
             return {
+              productId: product.productId,
               name: product.name,
               price: product.price,
               quantity: product.quantity,
@@ -72,4 +76,84 @@ export class OrdersPrismaRepository implements OrdersRepository {
       productsResponse.products,
     );
   }
+
+  async cancelledOrder(orderId: string): Promise<void> {
+
+
+    await this.prismaService.orders.update({
+      data: {
+        status: OrderStatusEnum.CANCELLED
+      },
+      where: {
+        orderId
+      }
+    })
+  }
+
+  async confirmedOrder(data: OrderInventoryConfirmedDTO): Promise<void> {
+    let countItens = 0;
+    let subTotal = 0;
+    let order = await this.prismaService.orders.findFirst({
+      where: {
+        orderId: data.orderId
+      },
+      include: {
+        products: true
+      }
+    })
+
+
+    const orderFind = data.products.map(async (product) => {
+      countItens += product.quantity;
+      subTotal += product.price * product.quantity;
+
+      const productFind = await this.prismaService.productsCart.findFirst({
+        where: {
+          productId: product.productId
+        }
+      })
+
+      return await this.prismaService.productsCart.update({
+        data: {
+          price: product.price,
+          name: product.name,
+          quantity: product.quantity
+        },
+        where: {
+          productCartId: productFind.productCartId
+        }
+      })
+
+    })
+
+    const responseProductsUpdated = await Promise.all(orderFind);
+
+    order = await this.prismaService.orders.findFirst({
+      where: {
+        orderId: data.orderId
+      },
+      include: {
+        products: true
+      }
+    })
+
+
+
+    const orderUpdated = await this.prismaService.orders.update({
+      data: {
+        status: data.status,
+        total: subTotal,
+        quantity: countItens
+      },
+      where: {
+        orderId: order.orderId
+      },
+      include: {
+        products: true
+      }
+    })
+
+    console.log("Order Promise", orderUpdated);
+  }
+
 }

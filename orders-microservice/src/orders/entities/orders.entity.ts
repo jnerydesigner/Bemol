@@ -10,7 +10,7 @@ export class OrdersEntity {
     readonly status: string,
     readonly total: number = 0,
     readonly products: ProductsCartEntity[],
-  ) {}
+  ) { }
 
   static create(
     userId: string,
@@ -24,8 +24,8 @@ export class OrdersEntity {
     const products = productsData.map((productData) => {
       const product = new ProductsCartEntity(
         productData.productId,
-        productData.name,
-        productData.price,
+        '',
+        0,
         productData.quantity,
         orderId,
       );
@@ -33,6 +33,10 @@ export class OrdersEntity {
       quantityProductsInOrder += product.quantity;
       return product;
     });
+
+    if (Number.isNaN(total)) {
+      total = 0;
+    }
 
     return new OrdersEntity(
       orderId,

@@ -13,13 +13,12 @@ export class AppService {
   constructor(
     @Inject('PAYMENT_MICROSERVICE')
     private readonly paymentClient: ClientProxy,
-  ) {}
+  ) { }
   getHello(): string {
     return 'Hello World!';
   }
 
   handleOrderCreated(data: CreateOrderEvent) {
-    console.log('handleOrderCreated', data);
     this.paymentClient.emit('order_process', {
       status: OrderStatus.PENDING,
     });

@@ -5,5 +5,5 @@ export interface ProductsRepository {
   findAll(): Promise<ProductsEntity[]>;
   findByProductName(productName: string): Promise<ProductsEntity>;
   update(product: ProductsEntity, imageUrl: string): Promise<ProductsEntity>;
-  findById(productId: string): Promise<ProductsEntity>;
+  findById(productId: string): Promise<any>;
 }

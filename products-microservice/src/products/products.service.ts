@@ -8,6 +8,9 @@ import { ProductsEntity } from './entities/products.entity';
 import { randomUUID } from 'node:crypto';
 import { ProductsOrdersDTO } from './dtos/products-orders.dto';
 import { ClientProxy } from '@nestjs/microservices';
+import { OrderStatusEnum } from './enum/order_status.enum';
+import { OrderInventoryDTO } from './dtos/order-inventory.dto';
+import { InventoryUpdatedDTO } from './dtos/inventory-updated.dto';
 
 @Injectable()
 export class ProductsService {
@@ -17,7 +20,9 @@ export class ProductsService {
     private readonly uploadService: MinioClientService,
     @Inject('ORDERS_MICROSERVICE')
     private readonly ordersBroker: ClientProxy,
-  ) {}
+    @Inject('INVENTORY_MICROSERVICE')
+    private readonly inventoryBroker: ClientProxy,
+  ) { }
 
   async findAllProducts() {
     return this.productsRepository.findAll();
@@ -115,6 +120,7 @@ export class ProductsService {
     }
   }
 
+
   async handleProductFind(data: ProductsOrdersDTO) {
     const productsMapper = data.products.map(async (product) => {
       const productResponse = await this.productsRepository.findById(
@@ -123,22 +129,40 @@ export class ProductsService {
 
       return {
         ...productResponse,
-        price: productResponse.getPrice(),
+        productId: product.productId,
+        price: productResponse.price,
         quantity: product.quantity,
+        orderId: data.orderId
       };
     });
 
     const products = await Promise.all(productsMapper);
 
+
     const productCart = {
       orderId: data.orderId,
       userId: data.userId,
       quantity: data.quantity,
-      status: data.status,
+      status: OrderStatusEnum.CONFIRMED,
       total: data.total,
       products,
     };
 
-    this.ordersBroker.emit('order_cart_products', productCart);
+
+    this.inventoryBroker.emit('inventory_decrement', productCart);
+
+  }
+
+
+  async handleUpdateInventory(data: InventoryUpdatedDTO | OrderInventoryDTO) {
+    switch (data.status) {
+      case OrderStatusEnum.CONFIRMED:
+        console.log('data', data);
+        this.ordersBroker.emit('order_inventory_confirmed', data);
+        break;
+      case OrderStatusEnum.CANCELLED:
+        this.ordersBroker.emit('order_inventory_cancelled', data);
+        break;
+    }
   }
 }

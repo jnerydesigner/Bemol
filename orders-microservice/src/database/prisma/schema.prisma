@@ -35,14 +35,15 @@ model Orders {
 }
 
 model ProductsCart {
-  productId String   @id @default(uuid()) @map("product_id")
-  name      String
-  price     Float
-  quantity  Int
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
-  orderId   String?  @map("order_id")
-  Orders    Orders?  @relation(fields: [orderId], references: [orderId])
+  productCartId String   @id @default(uuid()) @map("product_cart_id")
+  productId     String   @map("product_id")
+  name          String
+  price         Float
+  quantity      Int
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+  orderId       String?  @map("order_id")
+  Orders        Orders?  @relation(fields: [orderId], references: [orderId])
 
   @@map("products_cart")
 }

@@ -14,9 +14,17 @@ import { ClientsModule, Transport } from '@nestjs/microservices';
           queue: 'orders_queue',
         },
       },
+      {
+        name: 'INVENTORY_MICROSERVICE',
+        transport: Transport.RMQ,
+        options: {
+          urls: ['amqp://localhost:5672'],
+          queue: 'inventory_queue',
+        },
+      },
     ]),
   ],
   providers: [ProductsService],
   controllers: [ProductsController],
 })
-export class ProductsModule {}
+export class ProductsModule { }

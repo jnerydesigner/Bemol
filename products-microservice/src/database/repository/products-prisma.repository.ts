@@ -3,13 +3,16 @@ import { PrismaService } from '../client/prisma.service';
 import { ProductsEntity } from '@app/products/entities/products.entity';
 
 export class ProductsPrismaRepository implements ProductsRepository {
-  constructor(private readonly prisma: PrismaService) {}
-  async findById(productId: string): Promise<ProductsEntity> {
+  constructor(private readonly prisma: PrismaService) { }
+  async findById(productId: string): Promise<any> {
     const product = await this.prisma.products.findFirst({
       where: {
         productId: productId,
       },
     });
+
+
+    return product;
 
     return new ProductsEntity(
       product.productId,
