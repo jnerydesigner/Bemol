@@ -24,8 +24,8 @@ export class MinioClientService {
       region: 'us-east-1',
       endpoint: minioConfig.MINIO_ENDPOINT_FULL,
       credentials: {
-        accessKeyId: 'rwwhaLyks7polGaA',
-        secretAccessKey: '02yesqBUpB3k6UrlgN8wzCSkCqszloAD',
+        accessKeyId: process.env.MINIO_ACCESS_KEY,
+        secretAccessKey: process.env.MINIO_SECRET_KEY,
       },
       forcePathStyle: true,
     });
