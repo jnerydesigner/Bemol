@@ -16,7 +16,7 @@ export class OrdersService {
     private readonly ordersRepository: OrdersRepository,
     @Inject('PRODUCTS_MICROSERVICE')
     private readonly productsBroker: ClientProxy,
-  ) {}
+  ) { }
 
   async emitOrder(order: OrderRequestCreateDTO) {
     const orderCreate = OrdersEntity.create(
@@ -25,11 +25,12 @@ export class OrdersService {
       order.orderId,
     );
 
-    this.productsBroker.emit('product_find_orders', orderCreate);
 
-    // const orderCreate = OrdersEntity.create(order.userId, order.products);
-    // await this.ordersRepository.save(orderCreate);
-    // return orderCreate;
+
+    const orderCreated = await this.ordersRepository.save(orderCreate);
+
+    console.log(orderCreate.orderId)
+    this.productsBroker.emit('product_find_orders', orderCreated);
   }
 
   async calculateOrder(data: OrderRequestCreateDTO) {
@@ -40,5 +41,9 @@ export class OrdersService {
 
   async findAllOrders() {
     return this.ordersRepository.findAll();
+  }
+
+  async orderInventoryCancelled(data: any) {
+    await this.ordersRepository.cancelledOrder(data.orderId);
   }
 }

@@ -105,6 +105,7 @@ services:
       - MINIO_ROOT_USER=root
       - MINIO_ROOT_PASSWORD=12345678
       - MINIO_DEFAULT_BUCKETS=bemol
+    restart: unless-stopped
 
 networks:
   bemol_network:

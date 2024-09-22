@@ -15,7 +15,7 @@ import { ProductsOrdersDTO } from './dtos/products-orders.dto';
 
 @Controller('products')
 export class ProductsController {
-  constructor(private readonly productsService: ProductsService) {}
+  constructor(private readonly productsService: ProductsService) { }
 
   @Get()
   async findAllProducts() {
@@ -34,5 +34,10 @@ export class ProductsController {
   @EventPattern('product_find_orders')
   handlerproductsFind(data: ProductsOrdersDTO) {
     this.productsService.handleProductFind(data);
+  }
+
+  @EventPattern('inventory-updated')
+  handlerInventory(data: any) {
+    this.productsService.handleUpdateInventory(data);
   }
 }

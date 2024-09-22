@@ -8,6 +8,8 @@ import { ProductsEntity } from './entities/products.entity';
 import { randomUUID } from 'node:crypto';
 import { ProductsOrdersDTO } from './dtos/products-orders.dto';
 import { ClientProxy } from '@nestjs/microservices';
+import { OrderStatusEnum } from './enum/order_status.enum';
+import { OrderInventoryDTO } from './dtos/order-inventory.dto';
 
 @Injectable()
 export class ProductsService {
@@ -17,7 +19,9 @@ export class ProductsService {
     private readonly uploadService: MinioClientService,
     @Inject('ORDERS_MICROSERVICE')
     private readonly ordersBroker: ClientProxy,
-  ) {}
+    @Inject('INVENTORY_MICROSERVICE')
+    private readonly inventoryBroker: ClientProxy,
+  ) { }
 
   async findAllProducts() {
     return this.productsRepository.findAll();
@@ -123,12 +127,15 @@ export class ProductsService {
 
       return {
         ...productResponse,
-        price: productResponse.getPrice(),
+        productId: product.productId,
+        price: productResponse.price,
         quantity: product.quantity,
+        orderId: data.orderId
       };
     });
 
     const products = await Promise.all(productsMapper);
+
 
     const productCart = {
       orderId: data.orderId,
@@ -139,6 +146,81 @@ export class ProductsService {
       products,
     };
 
-    this.ordersBroker.emit('order_cart_products', productCart);
+
+
+
+
+    productCart.products.map((product) => {
+      const orderSend = {
+        orderId: data.orderId,
+        productId: product.productId,
+        quantity: product.quantity,
+        status: productCart.status,
+        productName: product.name,
+      };
+
+      this.inventoryBroker.emit('inventory_decrement', orderSend);
+    });
+
+
+
+    // const inventoryResponse = productCart.products.map((product) => {
+    //   return {
+    //     productId: product.productId,
+    //     quantity: product.quantity,
+    //   };
+    // });
+
+
+
+    // this.ordersBroker.emit('order_cart_products', productCart);
+  }
+
+
+  async handleUpdateInventory(data: any | OrderInventoryDTO) {
+
+    switch (data.status) {
+      case OrderStatusEnum.CONFIRMED:
+        // const inventoryResponse = data.products.map((product) => {
+        //   return {
+        //     productId: product.productId,
+        //     quantity: product.quantity,
+        //   };
+        // });
+
+        // this.inventoryBroker.emit('inventory_decrement', inventoryResponse);
+
+        break;
+      case OrderStatusEnum.CANCELLED:
+        this.ordersBroker.emit('order_inventory_cancelled', data);
+        break;
+    }
+    // const productsMapper = data.products.map(async (product) => {
+    //   const productResponse = await this.productsRepository.findById(
+    //     product.productId,
+    //   );
+
+    //   return {
+    //     ...productResponse,
+    //     productId: product.productId,
+    //     price: productResponse.getPrice(),
+    //     quantity: product.quantity,
+    //   };
+    // });
+
+    // const products = await Promise.all(productsMapper);
+
+    // const productCart = {
+    //   orderId: data.orderId,
+    //   userId: data.userId,
+    //   quantity: data.quantity,
+    //   status: data.status,
+    //   total: data.total,
+    //   products,
+    // };
+
+    // this.ordersBroker.emit('order_cart_products', productCart);
+
+    // return;
   }
 }

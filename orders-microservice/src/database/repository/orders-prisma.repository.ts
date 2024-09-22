@@ -1,9 +1,11 @@
 import { PrismaService } from '@app/database/client/prisma.service';
 import { OrdersEntity } from '@app/orders/entities/orders.entity';
+import { OrderStatusEnum } from '@app/orders/enum/order_status.enum';
 import { OrdersRepository } from '@app/orders/repository/orders.repository';
 
 export class OrdersPrismaRepository implements OrdersRepository {
-  constructor(private readonly prismaService: PrismaService) {}
+  constructor(private readonly prismaService: PrismaService) { }
+
   async findAll(): Promise<OrdersEntity[]> {
     const orderResponse = await this.prismaService.orders.findMany({
       include: {
@@ -24,7 +26,6 @@ export class OrdersPrismaRepository implements OrdersRepository {
     return orders;
   }
   async save(order: OrdersEntity): Promise<OrdersEntity> {
-    console.log(order.orderId);
     const [orderCreated, productCreated] =
       await this.prismaService.$transaction([
         this.prismaService.orders.create({
@@ -43,6 +44,7 @@ export class OrdersPrismaRepository implements OrdersRepository {
         this.prismaService.productsCart.createMany({
           data: order.products.map((product) => {
             return {
+              productId: product.productId,
               name: product.name,
               price: product.price,
               quantity: product.quantity,
@@ -71,5 +73,18 @@ export class OrdersPrismaRepository implements OrdersRepository {
       total,
       productsResponse.products,
     );
+  }
+
+  async cancelledOrder(orderId: string): Promise<void> {
+
+
+    await this.prismaService.orders.update({
+      data: {
+        status: OrderStatusEnum.CANCELLED
+      },
+      where: {
+        orderId
+      }
+    })
   }
 }

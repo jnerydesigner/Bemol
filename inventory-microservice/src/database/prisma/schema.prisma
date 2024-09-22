@@ -11,4 +11,6 @@ model Inventory {
   inventoryId String @id @default(uuid()) @map("inventory_id")
   productId   String @map("product_id")
   quantity    Int
+
+  @@map("inventory")
 }

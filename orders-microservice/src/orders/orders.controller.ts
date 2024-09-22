@@ -5,7 +5,7 @@ import { EventPattern } from '@nestjs/microservices';
 
 @Controller('orders')
 export class OrdersController {
-  constructor(private readonly ordersService: OrdersService) {}
+  constructor(private readonly ordersService: OrdersService) { }
 
   @Post()
   emitOrder(@Body() orderCreate: any) {
@@ -20,5 +20,10 @@ export class OrdersController {
   @EventPattern('order_cart_products')
   handleCartOrdersProducst(data: OrderRequestCreateDTO) {
     this.ordersService.calculateOrder(data);
+  }
+
+  @EventPattern('order_inventory_cancelled')
+  nadleOrderInventoryCancelled(data: any) {
+    this.ordersService.orderInventoryCancelled(data);
   }
 }
