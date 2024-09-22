@@ -1,7 +1,7 @@
 import { randomUUID } from "node:crypto";
 
 export class InventoryEntity {
-    constructor(readonly inventoryId: string, readonly productId: string, readonly quantity: number, readonly orderId?: string, readonly status?: string, readonly productName?: string) { }
+    constructor(readonly inventoryId: string, readonly productId: string, readonly quantity: number, readonly orderId?: string, readonly status?: string, readonly productName?: string, readonly price?: number) { }
 
     static create(productId: string, quantity: number) {
         const inventoryId = randomUUID();

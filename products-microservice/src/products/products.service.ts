@@ -10,6 +10,7 @@ import { ProductsOrdersDTO } from './dtos/products-orders.dto';
 import { ClientProxy } from '@nestjs/microservices';
 import { OrderStatusEnum } from './enum/order_status.enum';
 import { OrderInventoryDTO } from './dtos/order-inventory.dto';
+import { InventoryUpdatedDTO } from './dtos/inventory-updated.dto';
 
 @Injectable()
 export class ProductsService {
@@ -119,6 +120,7 @@ export class ProductsService {
     }
   }
 
+
   async handleProductFind(data: ProductsOrdersDTO) {
     const productsMapper = data.products.map(async (product) => {
       const productResponse = await this.productsRepository.findById(
@@ -141,86 +143,26 @@ export class ProductsService {
       orderId: data.orderId,
       userId: data.userId,
       quantity: data.quantity,
-      status: data.status,
+      status: OrderStatusEnum.CONFIRMED,
       total: data.total,
       products,
     };
 
 
+    this.inventoryBroker.emit('inventory_decrement', productCart);
 
-
-
-    productCart.products.map((product) => {
-      const orderSend = {
-        orderId: data.orderId,
-        productId: product.productId,
-        quantity: product.quantity,
-        status: productCart.status,
-        productName: product.name,
-      };
-
-      this.inventoryBroker.emit('inventory_decrement', orderSend);
-    });
-
-
-
-    // const inventoryResponse = productCart.products.map((product) => {
-    //   return {
-    //     productId: product.productId,
-    //     quantity: product.quantity,
-    //   };
-    // });
-
-
-
-    // this.ordersBroker.emit('order_cart_products', productCart);
   }
 
 
-  async handleUpdateInventory(data: any | OrderInventoryDTO) {
-
+  async handleUpdateInventory(data: InventoryUpdatedDTO | OrderInventoryDTO) {
     switch (data.status) {
       case OrderStatusEnum.CONFIRMED:
-        // const inventoryResponse = data.products.map((product) => {
-        //   return {
-        //     productId: product.productId,
-        //     quantity: product.quantity,
-        //   };
-        // });
-
-        // this.inventoryBroker.emit('inventory_decrement', inventoryResponse);
-
+        console.log('data', data);
+        this.ordersBroker.emit('order_inventory_confirmed', data);
         break;
       case OrderStatusEnum.CANCELLED:
         this.ordersBroker.emit('order_inventory_cancelled', data);
         break;
     }
-    // const productsMapper = data.products.map(async (product) => {
-    //   const productResponse = await this.productsRepository.findById(
-    //     product.productId,
-    //   );
-
-    //   return {
-    //     ...productResponse,
-    //     productId: product.productId,
-    //     price: productResponse.getPrice(),
-    //     quantity: product.quantity,
-    //   };
-    // });
-
-    // const products = await Promise.all(productsMapper);
-
-    // const productCart = {
-    //   orderId: data.orderId,
-    //   userId: data.userId,
-    //   quantity: data.quantity,
-    //   status: data.status,
-    //   total: data.total,
-    //   products,
-    // };
-
-    // this.ordersBroker.emit('order_cart_products', productCart);
-
-    // return;
   }
 }

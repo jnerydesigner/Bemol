@@ -2,6 +2,7 @@ import { Body, Controller, Get, Param, Patch, Post } from '@nestjs/common';
 import { InventoryCreateDTO, InventoryUpdateDTO } from './dtos/inventory-create.dto';
 import { InventoryService } from './inventory.service';
 import { EventPattern } from '@nestjs/microservices';
+import { InventoryDecrementDTO } from './dtos/inventory-decrement.dto';
 
 @Controller('inventory')
 export class InventoryController {
@@ -22,7 +23,7 @@ export class InventoryController {
     }
 
     @EventPattern('inventory_decrement')
-    async handleProductCreated(data: any) {
+    async handleProductCreated(data: InventoryDecrementDTO) {
         this.inventoryService.updateInventory(data);
     }
 }

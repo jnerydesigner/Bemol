@@ -6,6 +6,7 @@ import { OrdersRepository } from './repository/orders.repository';
 import { OrdersEntity } from './entities/orders.entity';
 import { ProductsCartEntity } from './entities/products-cart.entity';
 import { randomUUID } from 'node:crypto';
+import { OrderInventoryConfirmedDTO } from './dto/order-inventory-confirmed.dto';
 
 @Injectable()
 export class OrdersService {
@@ -26,10 +27,7 @@ export class OrdersService {
     );
 
 
-
     const orderCreated = await this.ordersRepository.save(orderCreate);
-
-    console.log(orderCreate.orderId)
     this.productsBroker.emit('product_find_orders', orderCreated);
   }
 
@@ -45,5 +43,9 @@ export class OrdersService {
 
   async orderInventoryCancelled(data: any) {
     await this.ordersRepository.cancelledOrder(data.orderId);
+  }
+
+  async orderInventoryConfirmed(data: OrderInventoryConfirmedDTO) {
+    await this.ordersRepository.confirmedOrder(data);
   }
 }

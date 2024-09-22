@@ -4,6 +4,7 @@ import { InventoryUpdateDTO } from './dtos/inventory-create.dto';
 import { BrokerInterface } from './brokers/broker.interface ';
 import { RabbitMQProductBroker } from './brokers/rabiitmq-product.broker';
 import { ClientProxy } from '@nestjs/microservices';
+import { InventoryDecrementDTO } from './dtos/inventory-decrement.dto';
 
 @Injectable()
 export class InventoryService {
@@ -23,16 +24,24 @@ export class InventoryService {
     return this.inventoryRepository.findAll();
   }
 
-  async updateInventory(inventory: InventoryUpdateDTO) {
-    let inventoryResponse = await this.inventoryRepository.updateInventory(inventory.productId, inventory.quantity, inventory.orderId, inventory.productName);
+  async updateInventory(inventory: InventoryDecrementDTO) {
+    const inventoryArray = inventory.products.map(async (element) => {
+      await this.inventoryRepository.updateInventory(element.productId, element.quantity, element.orderId, element.name, element.price);
 
-    inventoryResponse = {
-      ...inventoryResponse,
-      orderId: inventory.orderId,
-      productName: inventory.productName,
+      return element
+    });
+
+    const inventoryResponseArray = await Promise.all(inventoryArray);
+
+
+    const responseInventory = {
+      ...inventory,
+      products: inventoryResponseArray
     }
 
-    this.productBroker.emit('inventory-updated', inventoryResponse);
+    console.log(responseInventory);
+
+    this.productBroker.emit('inventory-updated', responseInventory);
   }
 
   async updateInventoryUnic(productId: string, quantity: number) {

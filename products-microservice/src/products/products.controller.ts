@@ -12,6 +12,7 @@ import { BufferedFile } from '@app/upload-files/file.model';
 import { ProductsCreateDTO } from './dtos/product-create.dto';
 import { EventPattern } from '@nestjs/microservices';
 import { ProductsOrdersDTO } from './dtos/products-orders.dto';
+import { InventoryUpdatedDTO } from './dtos/inventory-updated.dto';
 
 @Controller('products')
 export class ProductsController {
@@ -36,8 +37,9 @@ export class ProductsController {
     this.productsService.handleProductFind(data);
   }
 
+
   @EventPattern('inventory-updated')
-  handlerInventory(data: any) {
+  handlerInventory(data: InventoryUpdatedDTO) {
     this.productsService.handleUpdateInventory(data);
   }
 }

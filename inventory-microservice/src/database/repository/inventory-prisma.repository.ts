@@ -18,7 +18,7 @@ export class InventoryPrismaRepository implements InventoryRepository {
             data: {
                 inventoryId: inventory.inventoryId,
                 productId: inventory.productId,
-                quantity: inventory.quantity
+                quantity: inventory.quantity,
             }
         });
 
@@ -29,7 +29,7 @@ export class InventoryPrismaRepository implements InventoryRepository {
         throw new Error("Method not implemented.");
     }
 
-    async updateInventory(productId: string, quantity: number, orderId?: string, productName?: string): Promise<InventoryEntity | ResponseNotEnoughDTO> {
+    async updateInventory(productId: string, quantity: number, orderId?: string, productName?: string, productPrice?: number): Promise<InventoryEntity | ResponseNotEnoughDTO> {
         const inventory = await this.prisma.inventory.findFirst({
             where: {
                 productId
@@ -57,7 +57,7 @@ export class InventoryPrismaRepository implements InventoryRepository {
             }
         });
 
-        return new InventoryEntity(updatedInventory.inventoryId, updatedInventory.productId, quantity, orderId, OrderStatusEnum.CONFIRMED, productName);
+        return new InventoryEntity(updatedInventory.inventoryId, updatedInventory.productId, quantity, orderId, OrderStatusEnum.CONFIRMED, productName, productPrice);
     }
     deleteInventory(productId: string): Promise<void> {
         throw new Error("Method not implemented.");

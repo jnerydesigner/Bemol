@@ -2,6 +2,7 @@ import { Body, Controller, Get, Post } from '@nestjs/common';
 import { OrdersService } from './orders.service';
 import { OrderRequestCreateDTO } from './dto/orders-request.dto';
 import { EventPattern } from '@nestjs/microservices';
+import { OrderInventoryConfirmedDTO } from './dto/order-inventory-confirmed.dto';
 
 @Controller('orders')
 export class OrdersController {
@@ -23,7 +24,12 @@ export class OrdersController {
   }
 
   @EventPattern('order_inventory_cancelled')
-  nadleOrderInventoryCancelled(data: any) {
+  handleOrderInventoryCancelled(data: any) {
     this.ordersService.orderInventoryCancelled(data);
+  }
+
+  @EventPattern('order_inventory_confirmed')
+  handleOrderInventoryConfirmed(data: OrderInventoryConfirmedDTO) {
+    this.ordersService.orderInventoryConfirmed(data);
   }
 }
