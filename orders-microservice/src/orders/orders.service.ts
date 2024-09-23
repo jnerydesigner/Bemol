@@ -17,6 +17,8 @@ export class OrdersService {
     private readonly ordersRepository: OrdersRepository,
     @Inject('PRODUCTS_MICROSERVICE')
     private readonly productsBroker: ClientProxy,
+    @Inject('PAYMENTS_MICROSERVICE')
+    private readonly paymentsBroker: ClientProxy,
   ) { }
 
   async emitOrder(order: OrderRequestCreateDTO) {
@@ -46,6 +48,16 @@ export class OrdersService {
   }
 
   async orderInventoryConfirmed(data: OrderInventoryConfirmedDTO) {
-    await this.ordersRepository.confirmedOrder(data);
+    const inventoryOrder = await this.ordersRepository.confirmedOrder(data);
+    console.log(inventoryOrder);
+
+    this.paymentsBroker.emit('payment_create', inventoryOrder);
+
+
+  }
+
+  async handleOrderPaymentUpdate(data: any) {
+    await this.ordersRepository.updateOrderPayment(data)
+    console.log(data);
   }
 }

@@ -6,4 +6,5 @@ export interface OrdersRepository {
   findAll(): Promise<OrdersEntity[]>;
   cancelledOrder(orderId: string): Promise<void>;
   confirmedOrder(data: OrderInventoryConfirmedDTO): Promise<void>;
+  updateOrderPayment(data: any): Promise<void>;
 }

@@ -24,9 +24,17 @@ const config = new ConfigService();
           queue: 'products_queue',
         },
       },
+      {
+        name: 'PAYMENTS_MICROSERVICE',
+        transport: Transport.RMQ,
+        options: {
+          urls: ['amqp://localhost:5672'],
+          queue: 'payment_queue',
+        },
+      },
     ]),
   ],
   providers: [OrdersService],
   controllers: [OrdersController],
 })
-export class OrdersModule {}
+export class OrdersModule { }
