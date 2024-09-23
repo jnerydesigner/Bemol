@@ -32,4 +32,10 @@ export class OrdersController {
   handleOrderInventoryConfirmed(data: OrderInventoryConfirmedDTO) {
     this.ordersService.orderInventoryConfirmed(data);
   }
+
+
+  @EventPattern('order_payment_update')
+  handleOrderPaymentUpdate(data: any) {
+    this.ordersService.handleOrderPaymentUpdate(data);
+  }
 }

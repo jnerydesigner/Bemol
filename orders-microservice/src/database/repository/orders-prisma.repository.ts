@@ -90,7 +90,7 @@ export class OrdersPrismaRepository implements OrdersRepository {
     })
   }
 
-  async confirmedOrder(data: OrderInventoryConfirmedDTO): Promise<void> {
+  async confirmedOrder(data: OrderInventoryConfirmedDTO): Promise<any> {
     let countItens = 0;
     let subTotal = 0;
     let order = await this.prismaService.orders.findFirst({
@@ -109,11 +109,11 @@ export class OrdersPrismaRepository implements OrdersRepository {
 
       const productFind = await this.prismaService.productsCart.findFirst({
         where: {
-          productId: product.productId
+          orderId: data.orderId
         }
       })
 
-      return await this.prismaService.productsCart.update({
+      const updatedCart = await this.prismaService.productsCart.update({
         data: {
           price: product.price,
           name: product.name,
@@ -124,9 +124,13 @@ export class OrdersPrismaRepository implements OrdersRepository {
         }
       })
 
+      return updatedCart
+
     })
 
-    const responseProductsUpdated = await Promise.all(orderFind);
+    const produtcPromiseUpdated =
+      await Promise.all(orderFind);
+
 
     order = await this.prismaService.orders.findFirst({
       where: {
@@ -137,9 +141,7 @@ export class OrdersPrismaRepository implements OrdersRepository {
       }
     })
 
-
-
-    const orderUpdated = await this.prismaService.orders.update({
+    await this.prismaService.orders.update({
       data: {
         status: data.status,
         total: subTotal,
@@ -153,7 +155,27 @@ export class OrdersPrismaRepository implements OrdersRepository {
       }
     })
 
-    console.log("Order Promise", orderUpdated);
+    const orderFindNew = await this.prismaService.orders.findFirst({
+      where: {
+        orderId: data.orderId
+      },
+      include: {
+        products: true
+      }
+    })
+
+    return orderFindNew
+  }
+
+  async updateOrderPayment(data: any): Promise<void> {
+    await this.prismaService.orders.update({
+      data: {
+        status: data.status
+      },
+      where: {
+        orderId: data.orderId
+      }
+    })
   }
 
 }
