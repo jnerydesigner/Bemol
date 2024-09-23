@@ -109,9 +109,16 @@ export class OrdersPrismaRepository implements OrdersRepository {
 
       const productFind = await this.prismaService.productsCart.findFirst({
         where: {
-          orderId: data.orderId
+          orderId: data.orderId,
+          productId: product.productId
         }
       })
+
+      console.log("productFind", productFind)
+
+      console.log("product.price", product.price)
+      console.log("product.name", product.name)
+      console.log("product.quantity", product.quantity)
 
       const updatedCart = await this.prismaService.productsCart.update({
         data: {
@@ -123,6 +130,8 @@ export class OrdersPrismaRepository implements OrdersRepository {
           productCartId: productFind.productCartId
         }
       })
+
+      console.log("updatedCart", updatedCart)
 
       return updatedCart
 

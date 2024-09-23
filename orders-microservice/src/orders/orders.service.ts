@@ -49,11 +49,8 @@ export class OrdersService {
 
   async orderInventoryConfirmed(data: OrderInventoryConfirmedDTO) {
     const inventoryOrder = await this.ordersRepository.confirmedOrder(data);
-    console.log(inventoryOrder);
-
+    console.log("inventoryOrder", inventoryOrder);
     this.paymentsBroker.emit('payment_create', inventoryOrder);
-
-
   }
 
   async handleOrderPaymentUpdate(data: any) {
