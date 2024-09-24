@@ -152,16 +152,22 @@ Criação de um produto
 
 4. **Code Order Diagram**
 
-* OrderController (controlador HTTP)
-
-* OrderEventHandler (para consumir os eventos do gerenciador de mensageria)
-
-* OrderRepository (para persistência de dados)
-
-* OrderProcessor (lógica de negócios)
-
 
 ![Code Order Diagram](https://raw.githubusercontent.com/jnerydesigner/challenge-bemol/main/assets/diagrams/out/n4-code-order/Code%20n4.png)
 
+4. **Code SendMail Diagram**
+
+![Code SendMail Diagram](https://raw.githubusercontent.com/jnerydesigner/challenge-bemol/refs/heads/main/assets/diagrams/out/n4-code-sendmail/Code%20n4.png)
+
+4. **Code Product Diagram**
+
+![Code Product Diagram](https://raw.githubusercontent.com/jnerydesigner/challenge-bemol/refs/heads/main/assets/diagrams/out/n4-code-product-new/Code%20n4.png)
+
 4. **Code Payment Diagram**
+
+![Code Payment Diagram](https://raw.githubusercontent.com/jnerydesigner/challenge-bemol/refs/heads/main/assets/diagrams/out/n4-code-payment/Code%20n4.png)
+
+4. **Code Inventory Diagram**
+
+![Code Inventory Diagram](https://github.com/jnerydesigner/challenge-bemol/blob/main/assets/diagrams/out/n4-code-inventory/Code%20n4.png?raw=true)
 
