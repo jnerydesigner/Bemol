@@ -9,16 +9,17 @@ async function bootstrap() {
 
   const config = new ConfigService();
   const PORT_SERVER = config.get('PAYMENT_PORT');
-  const PORT_PAYMENT_MICROSERVICE = config.get('PORT_PAYMENT_MICROSERVICE');
   const logger = new Logger('PaymentMicroservice');
+
 
   app.connectMicroservice<MicroserviceOptions>({
     transport: Transport.RMQ,
     options: {
-      urls: ['amqp://localhost:5672'],
+      urls: ['amqp://bemol_rabbitmq:5672'],
       queue: 'payment_queue',
     },
   });
+
 
   await app.startAllMicroservices();
 

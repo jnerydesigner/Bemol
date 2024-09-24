@@ -21,11 +21,6 @@ spec:
           ports:
             - containerPort: 9000
             - containerPort: 9001
-          env:
-            - name: MINIO_ROOT_USER
-              value: "jander"  # Altere para um valor seguro
-            - name: MINIO_ROOT_PASSWORD
-              value: "12345678"  # Altere para um valor seguro
 ---
 apiVersion: v1
 kind: Service

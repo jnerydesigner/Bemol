@@ -2,9 +2,7 @@ import { HttpService } from "@nestjs/axios";
 import { ConfigService } from "@nestjs/config";
 import { PaymentAdapter } from "./interface/payment-adapter.interface";
 import { firstValueFrom } from "rxjs";
-import { OrderPaymentCreatedDTO, ResolvePaymentAdapterDTO } from "./dtos/order-payment-created.dto";
-import { PaymentsStatusEnum } from "./enums/payments-status.enum";
-import { PaymentsEntity } from "./entities/payments.entiry";
+import { ResolvePaymentAdapterDTO } from "./dtos/order-payment-created.dto";
 
 export class PaymentGatewayFakeAdapter implements PaymentAdapter {
     constructor(private readonly httpService: HttpService,

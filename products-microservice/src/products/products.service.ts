@@ -1,4 +1,4 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable, Logger } from '@nestjs/common';
 import { ProductsRepository } from './repository/products.repository';
 import { MinioClientService } from '@app/upload-files/minio-client.service';
 import { BufferedFile } from '@app/upload-files/file.model';
@@ -14,6 +14,7 @@ import { InventoryUpdatedDTO } from './dtos/inventory-updated.dto';
 
 @Injectable()
 export class ProductsService {
+  private logger: Logger = new Logger(ProductsService.name);
   constructor(
     @Inject('PRODUCTS_REPOSITORY')
     private readonly productsRepository: ProductsRepository,
@@ -25,6 +26,7 @@ export class ProductsService {
   ) { }
 
   async findAllProducts() {
+    this.logger.log('Buscando todos os produtos');
     return this.productsRepository.findAll();
   }
 
@@ -45,6 +47,7 @@ export class ProductsService {
         product
       );
 
+      this.logger.log(`Produto: ${productResponse.getName()} atualizado`);
       return productResponse;
     }
 
@@ -56,6 +59,8 @@ export class ProductsService {
 
 
     const product = await this.productsRepository.save(productEntity);
+
+    this.logger.log(`Produto: ${product.getName()} criado`);
 
     return new ProductsEntity(
       product.getProductId(),
@@ -118,6 +123,8 @@ export class ProductsService {
       const productResponse = await this.productsRepository.findById(
         product.productId,
       );
+
+      this.logger.log(JSON.stringify(productResponse));
 
       return {
         ...productResponse,

@@ -1,4 +1,4 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable, Logger } from '@nestjs/common';
 import { OrderPaymentCreatedDTO } from './dtos/order-payment-created.dto';
 import { PaymentsEntity } from './entities/payments.entiry';
 import { ClientProxy } from '@nestjs/microservices';
@@ -8,6 +8,7 @@ import { PaymentRepository } from './repositories/payment.repository';
 
 @Injectable()
 export class PaymentsService {
+    private logger: Logger = new Logger(PaymentsService.name);
     constructor(
         @Inject('ORDERS_MICROSERVICE')
         private readonly ordersBroker: ClientProxy,
@@ -20,9 +21,7 @@ export class PaymentsService {
         const payment = PaymentsEntity.createPayment(data.orderId, data.total, "BRL", "Pgamento de Compras");
         await this.paymentGatewayAdapter.processPayment(payment);
 
-        // await this.paymentRepository.savePayment({
-
-        // });
+        this.logger.log(`Payment created for order ${data.orderId}`);
 
     }
 
@@ -31,7 +30,9 @@ export class PaymentsService {
 
         await this.paymentRepository.savePayment(response);
 
-        console.log(response)
+
         this.ordersBroker.emit('order_payment_update', response);
+
+        this.logger.log(`Payment approved for order ${response.orderId}`);
     }
 }

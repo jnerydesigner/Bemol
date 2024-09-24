@@ -16,7 +16,7 @@ export class PaymentProcessService {
 
         setTimeout(async () => {
             console.log('Payment processed', dataProcess);
-            await firstValueFrom(this.httpService.post('http://localhost:4442/payments/process', dataProcess))
+            await firstValueFrom(this.httpService.post('http://payment_microservice:4442/payments/process', dataProcess))
         }, this.config.get<number>('PAYMENT_PROCESS_DELAY'));
 
     }

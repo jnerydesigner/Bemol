@@ -73,11 +73,6 @@ spec:
         image: jandernery/bemol_bff_gateway:v1.0
         ports:
         - containerPort: 4545
-        env:
-        - name: RABBITMQ_HOST
-          value: "rabbitmq-service"
-        - name: RABBITMQ_PORT
-          value: "5672"
 
 ---
 # bff-bemol Service

@@ -671,7 +671,7 @@
 
 "@nestjs/axios@^3.0.3":
   version "3.0.3"
-  resolved "git+ssh://git@github.com/nestjs/axios.git#d93b5a3be921d19ac052d3cbe61cfeca32383ee4"
+  resolved "git+ssh://git@github.com/nestjs/axios.git"
 
 "@nestjs/cli@^10.0.0":
   version "10.4.5"

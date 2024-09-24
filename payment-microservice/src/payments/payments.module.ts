@@ -8,16 +8,16 @@ import { ConfigService } from '@nestjs/config';
 import { DatabaseModule } from 'src/database/database.module';
 
 @Module({
-  imports: [ClientsModule.register([
+  imports: [HttpModule, DatabaseModule, ClientsModule.register([
     {
       name: 'ORDERS_MICROSERVICE',
       transport: Transport.RMQ,
       options: {
-        urls: ['amqp://localhost:5672'],
+        urls: ['amqp://bemol_rabbitmq:5672'],
         queue: 'orders_queue',
       },
-    }
-  ]), HttpModule, DatabaseModule],
+    },
+  ])],
   providers: [PaymentsService, {
     provide: 'PAYMENT_GATEWAY_ADAPTER',
     useFactory: (httpService: HttpService, config: ConfigService) => {
@@ -28,3 +28,4 @@ import { DatabaseModule } from 'src/database/database.module';
   controllers: [PaymentsController]
 })
 export class PaymentsModule { }
+

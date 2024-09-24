@@ -10,7 +10,7 @@ import { ClientsModule, Transport } from '@nestjs/microservices';
         name: 'ORDERS_MICROSERVICE',
         transport: Transport.RMQ,
         options: {
-          urls: ['amqp://localhost:5672'],
+          urls: ['amqp://bemol_rabbitmq:5672'],
           queue: 'orders_queue',
         },
       },
@@ -18,7 +18,7 @@ import { ClientsModule, Transport } from '@nestjs/microservices';
         name: 'INVENTORY_MICROSERVICE',
         transport: Transport.RMQ,
         options: {
-          urls: ['amqp://localhost:5672'],
+          urls: ['amqp://bemol_rabbitmq:5672'],
           queue: 'inventory_queue',
         },
       },

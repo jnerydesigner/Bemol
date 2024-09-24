@@ -12,7 +12,7 @@ import { ClientsModule, Transport } from '@nestjs/microservices';
         name: 'INVENTORY_MICROSERVICE',
         transport: Transport.RMQ,
         options: {
-          urls: ['amqp://localhost:5672'],
+          urls: ['amqp://bemol_rabbitmq:5672'],
           queue: 'inventory_queue',
         },
       },
@@ -20,7 +20,7 @@ import { ClientsModule, Transport } from '@nestjs/microservices';
         name: 'PRODUCTS_MICROSERVICE',
         transport: Transport.RMQ,
         options: {
-          urls: ['amqp://localhost:5672'],
+          urls: ['amqp://bemol_rabbitmq:5672'],
           queue: 'products_queue',
         },
       },
@@ -28,7 +28,7 @@ import { ClientsModule, Transport } from '@nestjs/microservices';
         name: 'PAYMENTS_MICROSERVICE',
         transport: Transport.RMQ,
         options: {
-          urls: ['amqp://localhost:5672'],
+          urls: ['amqp://bemol_rabbitmq:5672'],
           queue: 'payment_queue',
         },
       },
@@ -36,7 +36,7 @@ import { ClientsModule, Transport } from '@nestjs/microservices';
         name: 'SENDMAIL_MICROSERVICE',
         transport: Transport.RMQ,
         options: {
-          urls: ['amqp://localhost:5672'],
+          urls: ['amqp://bemol_rabbitmq:5672'],
           queue: 'sendmail_queue',
         },
       },
