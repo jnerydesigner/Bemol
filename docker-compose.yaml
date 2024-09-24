@@ -4,7 +4,7 @@ services:
     build:
       context: ./bemol-bff-gateway
     ports:
-      - "4545:4545"
+      - "4546:4546"
     env_file:
       - ./bemol-bff-gateway/.env
     depends_on:

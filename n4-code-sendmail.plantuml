@@ -1,0 +1,15 @@
+@startuml Code n4
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Component.puml
+
+Container_Boundary(sendMail, "Send Mail Service and Process") {
+    Component(sendMailController, "SendMail Controller", "Controller", "Envia os dados do email para o serviço de envio de email")
+    Component(sendMailService, "SendMail Service", "Business Logic", "Envia o  email dos Status do Pedido")
+}
+
+  Container(broker, "Message Broker", "RabbitMQ", "Centraliza a troca de mensagens entre serviços")
+
+
+Rel(broker, sendMailController, "Processa eventos de produtos consumidos do Message Broker")
+Rel(sendMailController, sendMailService, "Chama a Camada de Negócios")
+
+@enduml
