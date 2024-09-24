@@ -2,8 +2,8 @@ import { Module } from '@nestjs/common';
 import { OrdersService } from './orders.service';
 import { OrdersController } from './orders.controller';
 import { ClientsModule, Transport } from '@nestjs/microservices';
-import { ConfigService } from '@nestjs/config';
-const config = new ConfigService();
+
+
 
 @Module({
   imports: [
@@ -30,6 +30,14 @@ const config = new ConfigService();
         options: {
           urls: ['amqp://localhost:5672'],
           queue: 'payment_queue',
+        },
+      },
+      {
+        name: 'SENDMAIL_MICROSERVICE',
+        transport: Transport.RMQ,
+        options: {
+          urls: ['amqp://localhost:5672'],
+          queue: 'sendmail_queue',
         },
       },
     ]),

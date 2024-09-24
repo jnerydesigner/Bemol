@@ -19,13 +19,11 @@ model Users {
 }
 
 model Products {
-  productId   String   @id @default(uuid()) @map("product_id")
-  name        String
-  price       Float
-  description String
-  imageUrl    String?  @map("image_url")
-  createdAt   DateTime @default(now()) @map("created_at")
-  updatedAt   DateTime @updatedAt @map("updated_at")
+  productId String   @id @default(uuid()) @map("product_id")
+  name      String
+  price     Float
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
 
   @@map("products")
 }

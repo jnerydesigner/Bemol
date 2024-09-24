@@ -14,14 +14,15 @@ datasource db {
 }
 
 model Payments {
-  paymentId   String   @id @default(uuid()) @map("payment_id")
-  orderId     String   @map("order_id")
-  amount      Float
-  currency    String
-  description String
-  status      String
-  createdAt   DateTime @default(now()) @map("created_at")
-  updatedAt   DateTime @default(now()) @map("updated_at")
+  paymentId       String   @id @default(uuid()) @map("payment_id")
+  orderId         String   @map("order_id")
+  amount          Float
+  currency        String
+  description     String
+  status          String
+  transactionDate DateTime @map("transaction_date")
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @default(now()) @map("updated_at")
 
   @@map("payments")
 }

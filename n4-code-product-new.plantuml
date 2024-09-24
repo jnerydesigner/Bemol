@@ -1,0 +1,22 @@
+@startuml Code n4
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Component.puml
+
+Container_Boundary(productServiceAndProcess, "Product Service and Process") {
+    Component(productController, "Product Controller", "Controller", "Recebe requisições HTTP relacionadas a produtos e ouve os eventos de produtos consumidos do Message Broker")
+    Component(productRepository, "Product Repository", "Repository", "Realiza operações de persistência de produtos")
+    Component(productService, "Product Service", "Business Logic", "Chama o Repository e Persiste na Base de Dadose Publica Eventos para os Microserviços")
+
+}
+  ContainerDb(database, "Database", "PostgreSQL", "Armazena o estado dos produtos")
+  Container(broker, "Message Broker", "RabbitMQ", "Centraliza a troca de mensagens entre serviços")
+
+
+
+
+Rel(broker, productController, "Processa eventos de produtos consumidos do Message Broker")
+Rel(productService, broker, "Processa eventos de produtos consumidos do Message Broker")
+Rel(productController, productService, "Chama a Camada de Negócios")
+Rel(productService, productRepository, "Contem a Logica de acesso a camada de persistencia do Banco de Dados")
+Rel(productRepository, database, "Armazena estado de produtos")
+
+@enduml

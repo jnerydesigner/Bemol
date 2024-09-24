@@ -1,10 +1,8 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { InventoryRepository } from './repository/inventory.repository';
-import { InventoryUpdateDTO } from './dtos/inventory-create.dto';
-import { BrokerInterface } from './brokers/broker.interface ';
-import { RabbitMQProductBroker } from './brokers/rabiitmq-product.broker';
 import { ClientProxy } from '@nestjs/microservices';
 import { InventoryDecrementDTO } from './dtos/inventory-decrement.dto';
+import { OrderStatusEnum } from './enum/order_status.enum';
 
 @Injectable()
 export class InventoryService {
@@ -20,26 +18,25 @@ export class InventoryService {
     return this.inventoryRepository.saveInventory(productId, quantity);
   }
 
-  async findAll() {
-    return this.inventoryRepository.findAll();
-  }
-
   async updateInventory(inventory: InventoryDecrementDTO) {
-    const inventoryArray = inventory.products.map(async (element) => {
-      await this.inventoryRepository.updateInventory(element.productId, element.quantity, element.orderId, element.name, element.price);
 
-      return element
-    });
+    const responseUpdateProducts = await this.inventoryRepository.productsUpdate(inventory.products);
+    if (responseUpdateProducts.some(element => element.status === OrderStatusEnum.CANCELLED)) {
 
-    const inventoryResponseArray = await Promise.all(inventoryArray);
+      const inventoryCancelled = {
+        ...inventory,
+        status: OrderStatusEnum.CANCELLED
+      }
+      this.productBroker.emit('inventory-updated', inventoryCancelled);
+      return;
+    }
 
 
     const responseInventory = {
       ...inventory,
-      products: inventoryResponseArray
+      products: inventory.products
     }
 
-    console.log(responseInventory);
 
     this.productBroker.emit('inventory-updated', responseInventory);
   }

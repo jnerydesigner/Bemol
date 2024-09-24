@@ -1,0 +1,94 @@
+# RabbitMQ Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rabbitmq-deployment
+  labels:
+    app: rabbitmq
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: rabbitmq
+  template:
+    metadata:
+      labels:
+        app: rabbitmq
+    spec:
+      containers:
+      - name: rabbitmq
+        image: rabbitmq:3-management-alpine
+        ports:
+        - containerPort: 5672
+        - containerPort: 15672
+        volumeMounts:
+        - name: rabbitmq-data
+          mountPath: /var/lib/rabbitmq
+        - name: rabbitmq-log
+          mountPath: /var/log/rabbitmq
+      volumes:
+      - name: rabbitmq-data
+        emptyDir: {}
+      - name: rabbitmq-log
+        emptyDir: {}
+
+---
+# RabbitMQ Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: rabbitmq-service
+spec:
+  selector:
+    app: rabbitmq
+  ports:
+    - name: amqp
+      port: 5672
+      targetPort: 5672
+    - name: management
+      port: 15672
+      targetPort: 15672
+  type: ClusterIP
+
+---
+# bff-bemol Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: bemol-deployment
+  labels:
+    app: bff-bemol
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: bff-bemol
+  template:
+    metadata:
+      labels:
+        app: bff-bemol
+    spec:
+      containers:
+      - name: bff-bemol
+        image: jandernery/bemol_bff_gateway:v1.0
+        ports:
+        - containerPort: 4545
+        env:
+        - name: RABBITMQ_HOST
+          value: "rabbitmq-service"
+        - name: RABBITMQ_PORT
+          value: "5672"
+
+---
+# bff-bemol Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: bff-bemol-service
+spec:
+  selector:
+    app: bff-bemol
+  ports:
+    - port: 4545
+      targetPort: 4545
+  type: ClusterIP

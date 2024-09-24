@@ -7,6 +7,7 @@ import { OrdersEntity } from './entities/orders.entity';
 import { ProductsCartEntity } from './entities/products-cart.entity';
 import { randomUUID } from 'node:crypto';
 import { OrderInventoryConfirmedDTO } from './dto/order-inventory-confirmed.dto';
+import { OrderStatusEnum } from './enum/order_status.enum';
 
 @Injectable()
 export class OrdersService {
@@ -19,6 +20,8 @@ export class OrdersService {
     private readonly productsBroker: ClientProxy,
     @Inject('PAYMENTS_MICROSERVICE')
     private readonly paymentsBroker: ClientProxy,
+    @Inject('SENDMAIL_MICROSERVICE')
+    private readonly sendmailBroker: ClientProxy,
   ) { }
 
   async emitOrder(order: OrderRequestCreateDTO) {
@@ -31,10 +34,14 @@ export class OrdersService {
 
     const orderCreated = await this.ordersRepository.save(orderCreate);
     this.productsBroker.emit('product_find_orders', orderCreated);
+    this.sendmailBroker.emit('order_status', OrderStatusEnum.PENDING);
   }
 
   async calculateOrder(data: OrderRequestCreateDTO) {
     const order = OrdersEntity.create(data.userId, data.products, data.orderId);
+
+    this.sendmailBroker.emit('order_created', OrderStatusEnum.CONFIRMED);
+    this.sendmailBroker.emit('order_status', OrderStatusEnum.CONFIRMED);
 
     await this.ordersRepository.save(order);
   }
@@ -49,12 +56,13 @@ export class OrdersService {
 
   async orderInventoryConfirmed(data: OrderInventoryConfirmedDTO) {
     const inventoryOrder = await this.ordersRepository.confirmedOrder(data);
-    console.log("inventoryOrder", inventoryOrder);
     this.paymentsBroker.emit('payment_create', inventoryOrder);
+    this.sendmailBroker.emit('order_status', OrderStatusEnum.CONFIRMED);
   }
 
   async handleOrderPaymentUpdate(data: any) {
-    await this.ordersRepository.updateOrderPayment(data)
     console.log(data);
+    this.sendmailBroker.emit('order_status', OrderStatusEnum.PAYED);
+    await this.ordersRepository.updateOrderPayment(data)
   }
 }

@@ -18,3 +18,15 @@ export interface Product {
     quantity: number
     orderId: string
 }
+
+
+
+export interface ResolvePaymentAdapterDTO {
+    id: string
+    total: string
+    currency: string
+    status: string
+    transactionDate: string
+    orderId: string
+}
+

@@ -8,4 +8,5 @@ export interface InventoryRepository {
     deleteInventory(productId: string): Promise<void>;
     findAll(): Promise<InventoryEntity[]>;
     updateUniqueInventory(productId: string, quantity: number): Promise<any>;
+    productsUpdate(products: any[]): Promise<any[]>;
 }

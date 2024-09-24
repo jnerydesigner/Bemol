@@ -1,21 +1,19 @@
 @startuml Code n4
 !include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Component.puml
 
-Container_Boundary(orderServiceAndProcess, "Order Service and Process") {
-    Component(orderController, "OrderController", "Controller", "Recebe requisições HTTP relacionadas a pedidos")
-    Component(orderEventHandler, "OrderEventHandler", "Event Handler", "Consome eventos de pedidos do Message Broker")
-    Component(orderRepository, "OrderRepository", "Repository", "Realiza operações de persistência de pedidos")
-    Component(orderProcessor, "OrderProcessor", "Business Logic", "Contém a lógica de processamento de pedidos")
-    Component(orderEventPublisher, "OrderEventPublisher", "Event Publisher", "Publica eventos no Message Broker")
-    Component(orderService, "OrderService", "Business Logic", "Chama o Repository e Persiste na Base de Dados")
+Container_Boundary(inventoryServiceAndProcess, "Inventory Service and Process") {
+    Component(inventoryController, "Inventory Controller", "Controller", "Recebe requisições HTTP relacionadas ao inventário e Recebe eventos de estoque consumidos do Message Broker")  
+    Component(inventoryRepository, "Inventory Repository", "Repository", "Realiza operações de persistência de pedidos")
+    Component(inventoryService, "Inventory Service", "Business Logic", "Chama o Repository e Persiste na Base de Dados")
 }
 
+ Container(broker, "Message Broker", "RabbitMQ", "Centraliza a troca de mensagens entre serviços")
+ContainerDb(database, "Database", "PostgreSQL", "Armazena o estado dos pagamentos")
 
-Rel(orderController, orderProcessor, "Chama para processar pedidos")
-Rel(orderProcessor, orderService, "Envia a Busisness Logic a Atualização do estado dos pedidos")
-Rel(orderProcessor, orderEventPublisher, "Publica eventos de novos pedidos")
-Rel(orderEventHandler, orderProcessor, "Processa eventos de pedidos consumidos do Message Broker")
-Rel(orderController, orderService, "Chama a Camada de Negócios")
-Rel(orderService, orderRepository, "Contem a Logica de acesso a camada de persistencia do Banco de Dados")
+Rel(broker, inventoryController, "Processa eventos de estoque consumidos do Message Broker")
+Rel(inventoryController, inventoryService, "Chama para processar os dados de inventário")
+Rel(inventoryService, inventoryRepository, "Contem a Logica de acesso a camada de persistencia do Banco de Dados")
+Rel(inventoryService, broker, "Processa eventos de estoque consumidos do Message Broker")
+Rel(inventoryRepository, database, "Armazena estado de pagamentos")
 
 @enduml

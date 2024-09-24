@@ -18,6 +18,11 @@ export class OrdersController {
     return this.ordersService.findAllOrders();
   }
 
+  @EventPattern('order_inventory_confirmed')
+  handleOrderInventoryConfirmed(data: OrderInventoryConfirmedDTO) {
+    this.ordersService.orderInventoryConfirmed(data);
+  }
+
   @EventPattern('order_cart_products')
   handleCartOrdersProducst(data: OrderRequestCreateDTO) {
     this.ordersService.calculateOrder(data);
@@ -27,12 +32,6 @@ export class OrdersController {
   handleOrderInventoryCancelled(data: any) {
     this.ordersService.orderInventoryCancelled(data);
   }
-
-  @EventPattern('order_inventory_confirmed')
-  handleOrderInventoryConfirmed(data: OrderInventoryConfirmedDTO) {
-    this.ordersService.orderInventoryConfirmed(data);
-  }
-
 
   @EventPattern('order_payment_update')
   handleOrderPaymentUpdate(data: any) {

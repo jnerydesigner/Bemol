@@ -1,27 +1,37 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { OrderPaymentCreatedDTO } from './dtos/order-payment-created.dto';
 import { PaymentsEntity } from './entities/payments.entiry';
-import { firstValueFrom } from 'rxjs';
-import { HttpService } from '@nestjs/axios';
 import { ClientProxy } from '@nestjs/microservices';
 import { ConfigService } from '@nestjs/config';
+import { PaymentAdapter } from './interface/payment-adapter.interface';
+import { PaymentRepository } from './repositories/payment.repository';
 
 @Injectable()
 export class PaymentsService {
     constructor(
         @Inject('ORDERS_MICROSERVICE')
         private readonly ordersBroker: ClientProxy,
-        private readonly httpService: HttpService,
-        private readonly configService: ConfigService
+        @Inject('PAYMENT_GATEWAY_ADAPTER')
+        private readonly paymentGatewayAdapter: PaymentAdapter,
+        @Inject('PAYMENT_REPOSITORY')
+        private readonly paymentRepository: PaymentRepository
     ) { }
     async handleCreatePayments(data: OrderPaymentCreatedDTO) {
         const payment = PaymentsEntity.createPayment(data.orderId, data.total, "BRL", "Pgamento de Compras");
-        console.log('Payment Status', payment);
+        await this.paymentGatewayAdapter.processPayment(payment);
 
-        await firstValueFrom(this.httpService.post(`${this.configService.get<string>("PAYMENT_GATEWAY_URL")}/payment/process`, payment));
+        // await this.paymentRepository.savePayment({
+
+        // });
+
     }
 
-    handleAprovedPayment(data: any) {
-        this.ordersBroker.emit('order_payment_update', data);
+    async handleAprovedPayment(data: any) {
+        const response = await this.paymentGatewayAdapter.resolvePayment(data);
+
+        await this.paymentRepository.savePayment(response);
+
+        console.log(response)
+        this.ordersBroker.emit('order_payment_update', response);
     }
 }

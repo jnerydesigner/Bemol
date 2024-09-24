@@ -28,7 +28,7 @@ export class ProductsService {
     return this.productsRepository.findAll();
   }
 
-  async createProduct(image: BufferedFile, productInput: ProductsCreateDTO) {
+  async createProduct(productInput: ProductsCreateDTO) {
     const productSearch = await this.productsRepository.findByProductName(
       productInput.name,
     );
@@ -38,15 +38,11 @@ export class ProductsService {
         productSearch.getProductId(),
         productSearch.getName(),
         productSearch.getPrice(),
-        productSearch.getDescription(),
-        productSearch.getImageUrl(),
       );
 
-      const imageProduct = await this.imageProductUpload(image, product);
 
       const productResponse = await this.productsRepository.update(
-        product,
-        imageProduct,
+        product
       );
 
       return productResponse;
@@ -55,11 +51,9 @@ export class ProductsService {
     const productEntity = ProductsEntity.createProduct(
       productInput.name,
       productInput.price,
-      productInput.description,
     );
 
-    const imageProduct = await this.imageProductUpload(image, productEntity);
-    productEntity.setImageUrl(imageProduct);
+
 
     const product = await this.productsRepository.save(productEntity);
 
@@ -67,8 +61,6 @@ export class ProductsService {
       product.getProductId(),
       product.getName(),
       product.getPrice(),
-      product.getDescription(),
-      product.getImageUrl(),
     );
   }
 
@@ -157,7 +149,6 @@ export class ProductsService {
   async handleUpdateInventory(data: InventoryUpdatedDTO | OrderInventoryDTO) {
     switch (data.status) {
       case OrderStatusEnum.CONFIRMED:
-        console.log('data', data);
         this.ordersBroker.emit('order_inventory_confirmed', data);
         break;
       case OrderStatusEnum.CANCELLED:

@@ -6,13 +6,15 @@ import { PaymentsService } from './payments.service';
 @Controller('payments')
 export class PaymentsController {
     constructor(private readonly paymentsService: PaymentsService) { }
-    @EventPattern('payment_create')
-    handlerOrderPaymentCreated(data: OrderPaymentCreatedDTO) {
-        this.paymentsService.handleCreatePayments(data);
-    }
+
 
     @Post('process')
     processPaymentForWebHook(@Body() data: any) {
         this.paymentsService.handleAprovedPayment(data);
+    }
+
+    @EventPattern('payment_create')
+    handlerOrderPaymentCreated(data: OrderPaymentCreatedDTO) {
+        this.paymentsService.handleCreatePayments(data);
     }
 }

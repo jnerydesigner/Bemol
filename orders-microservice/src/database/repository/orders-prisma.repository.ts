@@ -13,6 +13,9 @@ export class OrdersPrismaRepository implements OrdersRepository {
       include: {
         products: true,
       },
+      orderBy: {
+        createdAt: 'desc'
+      }
     });
     const orders = orderResponse.map((order) => {
       return new OrdersEntity(
@@ -103,9 +106,14 @@ export class OrdersPrismaRepository implements OrdersRepository {
     })
 
 
+
     const orderFind = data.products.map(async (product) => {
       countItens += product.quantity;
       subTotal += product.price * product.quantity;
+      console.log("Pricce", product.price)
+      console.log("Quantity", product.quantity)
+      console.log(countItens)
+      console.log(subTotal)
 
       const productFind = await this.prismaService.productsCart.findFirst({
         where: {
@@ -113,12 +121,6 @@ export class OrdersPrismaRepository implements OrdersRepository {
           productId: product.productId
         }
       })
-
-      console.log("productFind", productFind)
-
-      console.log("product.price", product.price)
-      console.log("product.name", product.name)
-      console.log("product.quantity", product.quantity)
 
       const updatedCart = await this.prismaService.productsCart.update({
         data: {
@@ -131,14 +133,14 @@ export class OrdersPrismaRepository implements OrdersRepository {
         }
       })
 
-      console.log("updatedCart", updatedCart)
-
       return updatedCart
 
     })
 
     const produtcPromiseUpdated =
       await Promise.all(orderFind);
+
+    console.log(produtcPromiseUpdated)
 
 
     order = await this.prismaService.orders.findFirst({
@@ -153,7 +155,7 @@ export class OrdersPrismaRepository implements OrdersRepository {
     await this.prismaService.orders.update({
       data: {
         status: data.status,
-        total: subTotal,
+        total: 1,
         quantity: countItens
       },
       where: {
@@ -179,7 +181,7 @@ export class OrdersPrismaRepository implements OrdersRepository {
   async updateOrderPayment(data: any): Promise<void> {
     await this.prismaService.orders.update({
       data: {
-        status: data.status
+        status: OrderStatusEnum.PAYED
       },
       where: {
         orderId: data.orderId

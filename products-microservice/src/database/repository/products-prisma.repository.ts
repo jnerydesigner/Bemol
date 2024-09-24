@@ -14,13 +14,6 @@ export class ProductsPrismaRepository implements ProductsRepository {
 
     return product;
 
-    return new ProductsEntity(
-      product.productId,
-      product.name,
-      product.price,
-      product.description,
-      product.imageUrl,
-    );
   }
 
   async save(product: ProductsEntity): Promise<ProductsEntity> {
@@ -28,8 +21,6 @@ export class ProductsPrismaRepository implements ProductsRepository {
       data: {
         name: product.getName(),
         price: Number(product.getPrice()),
-        description: product.getDescription(),
-        imageUrl: product.getImageUrl(),
       },
     });
 
@@ -37,8 +28,6 @@ export class ProductsPrismaRepository implements ProductsRepository {
       productSaved.productId,
       productSaved.name,
       productSaved.price,
-      productSaved.description,
-      productSaved.imageUrl,
     );
   }
   async findByProductName(productName: string): Promise<ProductsEntity> {
@@ -56,8 +45,6 @@ export class ProductsPrismaRepository implements ProductsRepository {
       product.productId,
       product.name,
       product.price,
-      product.description,
-      product.imageUrl,
     );
   }
 
@@ -69,22 +56,17 @@ export class ProductsPrismaRepository implements ProductsRepository {
           product.productId,
           product.name,
           product.price,
-          product.description,
-          product.imageUrl,
         ),
     );
   }
 
   async update(
-    product: ProductsEntity,
-    imageUrl: string,
+    product: ProductsEntity
   ): Promise<ProductsEntity> {
     const update = await this.prisma.products.update({
       data: {
         name: product.getName(),
         price: product.getPrice(),
-        description: product.getDescription(),
-        imageUrl: imageUrl,
       },
       where: {
         productId: product.getProductId(),
@@ -95,8 +77,6 @@ export class ProductsPrismaRepository implements ProductsRepository {
       update.productId,
       update.name,
       update.price,
-      update.description,
-      update.imageUrl,
     );
   }
 }

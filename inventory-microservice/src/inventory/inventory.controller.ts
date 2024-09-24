@@ -12,11 +12,6 @@ export class InventoryController {
         return this.inventoryService.saveInventory(body.productId, body.quantity);
     }
 
-    @Get()
-    async findAll() {
-        return this.inventoryService.findAll();
-    }
-
     @Patch(":productId")
     async updateInventory(@Param("productId") productId: any, @Body() body: { quantity: number }) {
         return this.inventoryService.updateInventoryUnic(productId, body.quantity);
@@ -24,6 +19,7 @@ export class InventoryController {
 
     @EventPattern('inventory_decrement')
     async handleProductCreated(data: InventoryDecrementDTO) {
+        console.log(data)
         this.inventoryService.updateInventory(data);
     }
 }

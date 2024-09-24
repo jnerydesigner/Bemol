@@ -1,4 +1,22 @@
 services:
+  bemol_bff:
+    container_name: bemol_bff
+    build:
+      context: ./bemol-bff-gateway
+    ports:
+      - "4545:4545"
+    environment:
+      - NODE_ENV=production
+    depends_on:
+      - bemol_postgres_products
+      - bemol_postgres_inventory
+      - bemol_postgres_orders
+      - bemol_postgres_payments
+      - bemol_rabbitmq
+    networks:
+      - bemol_network
+    restart: unless-stopped
+
   bemol_rabbitmq:
     image: rabbitmq:3-management-alpine
     container_name: "bemol_rabbitmq"

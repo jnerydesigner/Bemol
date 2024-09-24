@@ -7,6 +7,7 @@ import { OrderStatusEnum } from "@app/inventory/enum/order_status.enum";
 export class InventoryPrismaRepository implements InventoryRepository {
     constructor(private readonly prisma: PrismaService) { }
 
+
     async findAll(): Promise<InventoryEntity[]> {
         const inventories = await this.prisma.inventory.findMany();
         return inventories.map(inventory => new InventoryEntity(inventory.inventoryId, inventory.productId, inventory.quantity));
@@ -95,5 +96,41 @@ export class InventoryPrismaRepository implements InventoryRepository {
         return new InventoryEntity(updatedInventory.inventoryId, updatedInventory.productId, updatedInventory.quantity);
 
     }
+
+    async productsUpdate(products: any[]): Promise<any[]> {
+        const inventoryArray = products.map(async (element) => {
+            const inventory = await this.prisma.inventory.findFirst({
+                where: {
+                    productId: element.productId,
+                }
+            })
+
+            if (inventory.quantity - element.quantity < 0) {
+                return {
+                    productId: inventory.productId,
+                    message: "Não temos todos os itens de sua ordem em estoque",
+                    quantity: inventory.quantity,
+                    status: OrderStatusEnum.CANCELLED
+                }
+            }
+
+            const inventoryUpdated = await this.prisma.inventory.update({
+                where: {
+                    inventoryId: inventory.inventoryId
+                },
+                data: {
+                    quantity: inventory.quantity - element.quantity
+                }
+            });
+            return inventoryUpdated;
+        });
+
+        const inventoryResponse = await Promise.all(inventoryArray);
+
+
+        return inventoryResponse
+
+    }
+
 
 }

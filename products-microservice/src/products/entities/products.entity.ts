@@ -11,23 +11,20 @@ export class ProductsEntity {
     productId: string,
     name: string,
     price: number,
-    description: string,
-    imageUrl?: string,
+
   ) {
     this.productId = productId;
     this.name = name;
     this.price = price;
-    this.description = description;
-    this.imageUrl = imageUrl;
+
   }
 
   static createProduct(
     name: string,
     price: number,
-    description: string,
   ): ProductsEntity {
     const productId = randomUUID();
-    return new ProductsEntity(productId, name, price, description);
+    return new ProductsEntity(productId, name, price);
   }
 
   setImageUrl(imageUrl: string) {
@@ -60,21 +57,12 @@ export class ProductsEntity {
     this.price = price;
   }
 
-  setDescription(description: string) {
-    this.description = description;
-  }
-
-  setProductId(productId: string) {
-    this.productId = productId;
-  }
 
   static fromObject(data: any): ProductsEntity {
     return new ProductsEntity(
       data.productId,
       data.name,
       data.price,
-      data.description,
-      data.imageUrl,
     );
   }
 }

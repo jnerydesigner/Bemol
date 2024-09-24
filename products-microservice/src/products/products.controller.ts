@@ -24,12 +24,10 @@ export class ProductsController {
   }
 
   @Post()
-  @UseInterceptors(FileInterceptor('image'))
   async createProduct(
-    @UploadedFile() image: BufferedFile,
     @Body() body: ProductsCreateDTO,
   ) {
-    return this.productsService.createProduct(image, body);
+    return this.productsService.createProduct(body);
   }
 
   @EventPattern('product_find_orders')

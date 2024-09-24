@@ -4,12 +4,14 @@
 Person(cliente, "Cliente", "Usuário do sistema que faz pedidos")
 
 System(legacySystem, "Sistema Legado", "Sistemas externos de legado")
+System(paymentGateway, "Sistema externo de Pagamentos Fake", "Processa os Pagamentos externamente")
 
 System_Boundary(spp_boundary, "Sistema de Processamento de Pedidos") {
   Container(apiGateway, "API Gateway BFF", "NestJS", "Recebe requisições dos clientes e gera eventos")
   Container(orderService, "Order Service", "Microsserviço", "Processa pedidos e publica eventos")
   Container(messageBroker, "Gerenciador de Mensagens", "RabbitMQ", "Gerencia a comunicação entre microsserviços")
   Container(paymentService, "Payment Service", "Microsserviço", "Gerencia pagamentos")
+  Container(productService, "Product Service", "Microsserviço", "Gerencia o os produtos")
   Container(inventoryService, "Inventory Service", "Microsserviço", "Gerencia o estoque")
 }
 
@@ -19,6 +21,9 @@ orderService --> messageBroker : "Publica eventos de pedidos"
 messageBroker --> paymentService : "Processa pagamentos"
 messageBroker --> inventoryService : "Atualiza estoque"
 orderService --> legacySystem : "Comunicação com sistemas legados"
+messageBroker --> productService: "Consulta os Produtos"
+paymentService --> paymentGateway: "Envia Pagamento para um Sistema externo"
+paymentGateway --> paymentService: "Recebe o Pagamento de um Sistema externo"
 
 
 @enduml
